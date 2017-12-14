@@ -12,10 +12,7 @@ import java.util.Scanner;
  	- String이라면 문자열 각 인덱스 문자를 비교함 : 같은 문자열이라면 true  	
          
     [개선]
-    1. 실행시키고 싶은 만큼 계산할 수 있음 : while - 탈출문  
- 	2. 프린터가 어떤 것이냐에 따라서 알아서 프린트되도록 : 입력값 물을 때도
- 	3. 계속해서 계산할 수 있도록 함
- 	- 첫번째 값 입력 후 사칙연산 입력 에러인 경우 첫번째 값 유지
+    1. 값, 심볼 받아오는, 결과 출력 메서드 분리
   	
  */
 public class Calculator {		
@@ -24,28 +21,37 @@ public class Calculator {
 		CalcPrinter printer = ConsoleCalcPrinter.getInstance();
 		Calculator calculator = new Calculator(ConsoleCalcPrinter.getInstance());
 		
-		printer.print("숫자를 입력해주세요");			
-		int result = scanner.nextInt();		
+				
+		int result = getValue(scanner, printer);		
 		
-		while(true) {
-			printer.print("사칙 연산 기호 입력해주세요(종료하려면 q)");
-			String symbol = scanner.next();
+		while(true) {			
+			String symbol = getSymbol(scanner, printer);
 			
 			if(symbol.equals("q")) {
-				scanner.close();
-				calculator = null;	
-				printer.print("계산기 종료 - 최종결과 : " + result);
+				calculator.printResult(result);
+				scanner.close();				
+				calculator = null;					
 				break;
 			}
-									
-			printer.print("숫자를 입력해주세요");
-			int num2 = scanner.nextInt();
+											
+			int num2 = getValue(scanner, printer);
 			
 			result = calculator.calc(symbol, result, num2);
 			calculator.printResult(result);
 		}
 		
 	}
+	
+	public static int getValue(Scanner scanner, CalcPrinter printer) {
+		printer.print("숫자를 입력해주세요");
+		return scanner.nextInt();
+	}
+	
+	public static String getSymbol(Scanner scanner, CalcPrinter printer) {
+		printer.print("사칙 연산 기호 입력해주세요(종료하려면 q)");
+		return scanner.next();
+	}
+	
 	
 	
 	private CalcPrinter printer;
@@ -55,7 +61,7 @@ public class Calculator {
 	}
 	
 	private void printResult(int result) {
-		printer.print(result);
+		printer.print("결과 : " + result);
 	}
 	
 	
