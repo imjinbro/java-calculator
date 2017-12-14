@@ -11,21 +11,19 @@ import java.util.Scanner;
  	- 같은 주소값을 가지고 있지않다면 String인지 체크(instanceof)
  	- String이라면 문자열 각 인덱스 문자를 비교함 : 같은 문자열이라면 true  	
          
-    [개선]
-    1. 값, 심볼 받아오는, 결과 출력 메서드 분리
-  	
+    [변경]
+    - IO 환경 고려없이 클래스 나누는 것에만 치중해서 코드 변경해봄 : Input, Output, Calculator
+      
  */
 public class Calculator {		
 	public static void main(String[] args){
-		Scanner scanner = new Scanner(System.in);
-		CalcPrinter printer = ConsoleCalcPrinter.getInstance();
-		Calculator calculator = new Calculator(ConsoleCalcPrinter.getInstance());
-		
+		Scanner scanner = new Scanner(System.in);				
+		Calculator calculator = new Calculator();
 				
-		int result = getValue(scanner, printer);		
+		int result = CalcInput.getValue(scanner);		
 		
-		while(true) {			
-			String symbol = getSymbol(scanner, printer);
+		while(true) {						
+			String symbol = CalcInput.getSymbol(scanner);
 			
 			if(symbol.equals("q")) {
 				calculator.printResult(result);
@@ -33,35 +31,18 @@ public class Calculator {
 				calculator = null;					
 				break;
 			}
-											
-			int num2 = getValue(scanner, printer);
+														
+			int num2 = CalcInput.getValue(scanner);
 			
 			result = calculator.calc(symbol, result, num2);
 			calculator.printResult(result);
 		}
 		
 	}
-	
-	public static int getValue(Scanner scanner, CalcPrinter printer) {
-		printer.print("숫자를 입력해주세요");
-		return scanner.nextInt();
-	}
-	
-	public static String getSymbol(Scanner scanner, CalcPrinter printer) {
-		printer.print("사칙 연산 기호 입력해주세요(종료하려면 q)");
-		return scanner.next();
-	}
-	
-	
-	
-	private CalcPrinter printer;
-	
-	public Calculator(CalcPrinter printer) {
-		this.printer = printer;
-	}
-	
+		
+		
 	private void printResult(int result) {
-		printer.print("결과 : " + result);
+		CalcOutput.print("결과 : " + result);
 	}
 	
 	
@@ -75,7 +56,7 @@ public class Calculator {
 		} else if(symbol.equals("/")) {
 			return divide(num1, num2);
 		} else {
-			printer.print("유효하지않은 기호입니다");
+			CalcOutput.print("유효하지않은 기호입니다");
 			return num1;
 		}				
 	}
@@ -94,34 +75,5 @@ public class Calculator {
 	
 	public int divide(int num1, int num2) {		
 		return num1/num2;
-	}
-	
+	}	
 }
-
-
-/******** 계산기 전용 프린터 ********/
-interface CalcPrinter{
-	void print(int result);
-	void print(String msg);
-}
-
-class ConsoleCalcPrinter implements CalcPrinter{
-	private static ConsoleCalcPrinter printer = new ConsoleCalcPrinter();
-	private ConsoleCalcPrinter() {}
-	
-	public static ConsoleCalcPrinter getInstance() {
-		return printer;
-	}
-	
-	@Override
-	public void print(int result) {
-		System.out.println(result);
-	}
-	
-	@Override
-	public void print(String msg) {
-		System.out.println(msg);
-	}
-}
-
-/************************************/
